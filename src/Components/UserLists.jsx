@@ -1,9 +1,14 @@
 import React from "react";
 import { FaUserEdit } from "react-icons/fa";
 import { TiUserDelete } from "react-icons/ti";
-import { Link } from "react-router-dom"; // Import Link
+import { Link } from "react-router-dom";
 
-export default function UserList({ users, onEdit, onDelete }) {
+export default function UserList({ users, onEdit, onDelete, setActiveRow }) {
+  const isMobile = window.screen.width <= 640;
+  const isTablet = !isMobile && window.screen.width <= 1024;
+  const isDesktop = !isMobile && !isTablet;
+
+  console.log({ isMobile, isTablet });
   return (
     <div>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -11,10 +16,10 @@ export default function UserList({ users, onEdit, onDelete }) {
           <tr style={{ backgroundColor: "#1F2937", color: "white" }}>
             <th style={{ padding: "10px" }}>ID</th>
             <th style={{ padding: "10px" }}>Name</th>
-            <th style={{ padding: "10px" }}>Username</th>
-            <th style={{ padding: "10px" }}>Email</th>
-            <th style={{ padding: "10px" }}>Phone</th>
-            <th style={{ padding: "10px" }}>Website</th>
+            {!isMobile && <th style={{ padding: "10px" }}>Username</th>}
+            {!isMobile && <th style={{ padding: "10px" }}>Email</th>}
+            {!isMobile && <th style={{ padding: "10px" }}>Phone</th>}
+            {isDesktop && <th style={{ padding: "10px" }}>Website</th>}
             <th style={{ padding: "10px" }}>Actions</th>
           </tr>
         </thead>
@@ -22,33 +27,47 @@ export default function UserList({ users, onEdit, onDelete }) {
           {users.length > 0 ? (
             users.map((user, index) => (
               <tr
-                key={user.id}
+                key={index}
                 style={{
                   backgroundColor: index % 2 === 0 ? "#2D8C7B" : "#1F2937",
                   color: "#FFFFFF",
                 }}
               >
-                <td style={{ padding: "10px", border: "none" }}>{user.id}</td>
+                <td style={{ padding: "10px", border: "none" }}>{index + 1}</td>
                 <td style={{ padding: "10px", border: "none" }}>
-                  <Link to={`/user/${user.id}`} style={{ color: 'white', textDecoration: 'none' }}>
+                  <Link
+                    to={`/user/${user.id}`}
+                    style={{ color: "white", textDecoration: "none" }}
+                  >
                     {user.name}
                   </Link>
                 </td>
-                <td style={{ padding: "10px", border: "none" }}>
-                  {user.username}
-                </td>
-                <td style={{ padding: "10px", border: "none" }}>
-                  {user.email}
-                </td>
-                <td style={{ padding: "10px", border: "none" }}>
-                  {user.phone}
-                </td>
-                <td style={{ padding: "10px", border: "none" }}>
-                  {user.website}
-                </td>
+                {!isMobile && (
+                  <td style={{ padding: "10px", border: "none" }}>
+                    {user.username}
+                  </td>
+                )}
+                {!isMobile && (
+                  <td style={{ padding: "10px", border: "none" }}>
+                    {user.email}
+                  </td>
+                )}
+                {!isMobile && (
+                  <td style={{ padding: "10px", border: "none" }}>
+                    {user.phone}
+                  </td>
+                )}
+                {isDesktop && (
+                  <td style={{ padding: "10px", border: "none" }}>
+                    {user.website}
+                  </td>
+                )}
                 <td style={{ padding: "10px", border: "none" }}>
                   <button
-                    onClick={() => onEdit(user)}
+                    onClick={() => {
+                      setActiveRow(index);
+                      onEdit(user);
+                    }}
                     style={{
                       backgroundColor: "#007bff",
                       color: "white",
@@ -61,7 +80,10 @@ export default function UserList({ users, onEdit, onDelete }) {
                     <FaUserEdit />
                   </button>
                   <button
-                    onClick={() => onDelete(user)}
+                    onClick={() => {
+                      setActiveRow(index);
+                      onDelete(user);
+                    }}
                     style={{
                       backgroundColor: "#dc3545",
                       color: "white",
